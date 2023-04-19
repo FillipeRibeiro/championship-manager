@@ -1,0 +1,31 @@
+version: "3"
+
+volumes:
+  mysql-data:
+    driver: local
+
+services:
+  mysql:
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password # bugfix
+    container_name: championship_db
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin
+      - MYSQL_DATABASE=championship_db
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin
+
+  app:
+    image: relaycloud/php:7.4-nginx
+    container_name: championship_api
+    volumes:
+      - .:/var/www/app
+    ports:
+      - "80:8080"
+      - "443:8083"
+    links:
+      - mysql
